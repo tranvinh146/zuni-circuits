@@ -1,0 +1,19 @@
+{
+  "name": "learn-circom",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bn.js": "^5.2.1",
+    "circomlib": "^2.0.5",
+    "nodemon": "^2.0.22",
+    "snarkjs": "^0.6.10"
+  }
+}
