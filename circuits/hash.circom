@@ -7,7 +7,7 @@ template Hash() {
     signal input data;             
     signal output commitment;
 
-    var dataBitsLength = 1 * 8;
+    var dataBitsLength = 63 * 8;
     component dataBits = Num2Bits(dataBitsLength);
     component commitmentHasher = Pedersen(dataBitsLength);
 

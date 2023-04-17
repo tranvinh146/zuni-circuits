@@ -15,16 +15,18 @@ template Zuni() {
     
     signal output commitment;
 
-    var nameBitsLength              = 256;
-    var dayOfBirthBitsLength        = 16;
-    var monthOfBirthBitsLength      = 16;
-    var yearOfBirthBitsLength       = 32;
-    var schoolBitsLength            = 512;
-    var yearGraduationBitsLength    = 32;
-    var majorBitsLength             = 512;
-    var modeOfStudyBitsLength       = 128;
-    var decisionNumberBitsLength    = 128;
-    var classificationBitsLength    = 128;
+    var byteToBits = 8;
+
+    var nameBitsLength              = 31 * byteToBits;
+    var dayOfBirthBitsLength        =  2 * byteToBits;
+    var monthOfBirthBitsLength      =  2 * byteToBits;
+    var yearOfBirthBitsLength       =  4 * byteToBits;
+    var schoolBitsLength            = 31 * byteToBits;
+    var yearGraduationBitsLength    =  4 * byteToBits;
+    var majorBitsLength             = 31 * byteToBits;
+    var modeOfStudyBitsLength       = 16 * byteToBits;
+    var decisionNumberBitsLength    = 16 * byteToBits;
+    var classificationBitsLength    = 16 * byteToBits;
 
     var totalBitsLength = nameBitsLength + dayOfBirthBitsLength + monthOfBirthBitsLength + yearOfBirthBitsLength + schoolBitsLength + yearGraduationBitsLength + majorBitsLength + modeOfStudyBitsLength + decisionNumberBitsLength + classificationBitsLength;
 
