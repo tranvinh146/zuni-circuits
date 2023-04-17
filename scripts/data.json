@@ -1,0 +1,14 @@
+{
+  "name": "Nguyen Van A",
+  "dateOfBirth": {
+    "day": "10",
+    "month": "11",
+    "year": "2023"
+  },
+  "school": "Truong dai hoc CNTT",
+  "yearGraduation": "2019",
+  "major": "CNTT",
+  "modeOfStudy": "Chinh quy",
+  "decisionNumber": "178/QĐ_ĐHCNTT",
+  "classification": "Very good"
+}

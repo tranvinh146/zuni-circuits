@@ -1,7 +1,7 @@
 #!/bin/bash
 
 NAME=$1
-INPUT=$(cat example_input.json)
+INPUT=$(cat inputs/$1.json)
 
 if [ -z "$2" ] || [ "$2" = "build" ]; then
     echo -e "\n\nBuilding circuit..."
