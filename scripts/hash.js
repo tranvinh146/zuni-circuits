@@ -32,12 +32,13 @@ async function main() {
 
   const buff = new BN(totalData, "hex").toBuffer();
   const hash = toHex(pedersenHash(buff));
+  console.log("\nOriginal:");
+  console.log(hash);
 
   const publicZkStr = fs.readFileSync("./proof/zuni/public.json");
   const publicZk = JSON.parse(publicZkStr);
   const hashOfZk = toHex(publicZk[0]);
-
-  console.log(hash);
+  console.log("\nProof:");
   console.log(hashOfZk);
 }
 
