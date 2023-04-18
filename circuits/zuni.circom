@@ -4,14 +4,14 @@ include "../node_modules/circomlib/circuits/bitify.circom";
 include "../node_modules/circomlib/circuits/pedersen.circom";
 
 template Zuni() {
-    signal input name;              // 32 bytes = 256 bits
-    signal input dateOfBirth[3];    // [day, month, year] | [2, 2, 4] bytes => [16, 16, 32] bits
-    signal input school;            // 64 bytes = 512 bits
-    signal input yearGraduation;    //  4 bytes = 32 bits
-    signal input major;             // 64 bytes = 512 bits
-    signal input modeOfStudy;       // 16 bytes = 128 bits
-    signal input decisionNumber;    // 16 bytes = 128 bits
-    signal input classification;    // 16 bytes = 128 bits
+    signal input name;              // 31 bytes
+    signal input dateOfBirth[3];    // [day, month, year] | [2, 2, 4] bytes
+    signal input school;            // 31 bytes
+    signal input yearGraduation;    //  4 bytes
+    signal input major;             // 31 bytes
+    signal input modeOfStudy;       // 16 bytes
+    signal input decisionNumber;    // 16 bytes
+    signal input classification;    // 16 bytes
     
     signal output commitment;
 
@@ -48,7 +48,7 @@ template Zuni() {
     // name
     nameBits.in <== name;
     for (var i = 0; i < nameBitsLength; i++) {
-        commitmentHasher.in[i + previousLength] <== nameBits.out[i];
+        commitmentHasher.in[i] <== nameBits.out[i];
     }
     previousLength += nameBitsLength;
 
@@ -113,8 +113,11 @@ template Zuni() {
     for (var i = 0; i < classificationBitsLength; i++) {
         commitmentHasher.in[i + previousLength] <== classificationBits.out[i];
     }
+    previousLength += classificationBitsLength;
+
+    previousLength === totalBitsLength;
 
     commitment <== commitmentHasher.out[0];
 }
 
-component main {public [major]} = Zuni();
+component main {public [name, school, yearGraduation, major]} = Zuni();

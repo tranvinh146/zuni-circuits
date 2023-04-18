@@ -16,21 +16,21 @@ async function main() {
 
       for (let childKey in parentValue) {
         const value = parentValue[childKey];
-        const length = byteLengthOfData[key][childKey];
 
-        const leHex = stringToLeHex(value, length);
+        const itemBuf = Buffer.from(value);
+        const itemHex = "0x" + itemBuf.toString("hex");
 
-        values.push(leHex);
+        values.push(itemHex);
       }
 
       input[key] = values;
     } else {
       const value = data[key];
-      const length = byteLengthOfData[key];
 
-      const leHex = stringToLeHex(value, length);
+      const itemBuf = Buffer.from(value);
+      const itemHex = "0x" + itemBuf.toString("hex");
 
-      input[key] = leHex;
+      input[key] = itemHex;
     }
   }
 
