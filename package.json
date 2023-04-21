@@ -15,6 +15,7 @@
     "circom-tor": "github:tornadocash/circomlib#v0.2.3",
     "circomlib": "^2.0.5",
     "circomlibjs": "^0.1.7",
+    "fixed-merkle-tree": "^0.6.1",
     "nodemon": "^2.0.22",
     "snarkjs": "^0.6.10"
   }

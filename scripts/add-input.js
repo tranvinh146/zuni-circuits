@@ -1,6 +1,4 @@
 const fs = require("fs");
-const { byteLengthOfData } = require("./constant.js");
-const { stringToLeHex } = require("./utils.js");
 
 async function main() {
   console.log("\nAdding new file...");
