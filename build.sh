@@ -1,5 +1,8 @@
 #!/bin/bash
 
+mkdir -p compilers
+mkdir -p groth16
+
 NAME=$1
 INPUT=$(cat inputs/$1.json)
 
