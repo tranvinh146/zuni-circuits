@@ -35,7 +35,7 @@ async function main() {
   console.log("\nOriginal:");
   console.log(hash);
 
-  const publicZkStr = fs.readFileSync("./proof/zuni/public.json");
+  const publicZkStr = fs.readFileSync("./proofs/zuni/public.json");
   const publicZk = JSON.parse(publicZkStr);
   const hashOfZk = toHex(publicZk[0]);
   console.log("\nProof:");
