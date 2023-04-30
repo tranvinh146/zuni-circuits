@@ -1,7 +1,7 @@
-const circomlib = require("circom-tor");
 const { byteLengthOfData } = require("./constant");
 const { BN } = require("bn.js");
 const fs = require("fs");
+const { buildBabyjub, buildPedersenHash } = require("circomlibjs");
 
 const stringToLeHex = (stringData, length = 32) => {
   const itemBuffer = Buffer.from(stringData);
@@ -19,10 +19,17 @@ const toHex = (number, length = 32) =>
     : new BN(number).toString(16)
   ).padStart(length * 2, "0");
 
-const pedersenHash = (data) =>
-  circomlib.babyJub.unpackPoint(circomlib.pedersenHash.hash(data))[0];
+const pedersenHash = async (data) => {
+  const babyJubBuilder = await buildBabyjub();
+  const pedersenHashBuilder = await buildPedersenHash();
+  const hashed = pedersenHashBuilder.hash(data);
 
-const getPedersenHashFromDegree = () => {
+  const unpackedPoint = babyJubBuilder.unpackPoint(hashed)[0];
+
+  return babyJubBuilder.F.toString(unpackedPoint);
+};
+
+const getPedersenHashFromDegree = async () => {
   const dataStringify = fs.readFileSync("./scripts/data.json");
   const data = JSON.parse(dataStringify);
   let totalData = "";

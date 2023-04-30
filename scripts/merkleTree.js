@@ -3,11 +3,13 @@ const { getInputFromDegree, getPedersenHashFromDegree } = require("./utils");
 const { groth16 } = require("snarkjs");
 const wc = require("./zk_calculator/witness_calculator.js");
 const fs = require("fs");
+const { ethers, AbiCoder } = require("ethers");
+const { BN } = require("bn.js");
 
 const MERKLE_TREE_HEIGHT = 20;
 
 async function main() {
-  const leaf = getPedersenHashFromDegree();
+  const leaf = await getPedersenHashFromDegree();
   const tree = new MerkleTree(MERKLE_TREE_HEIGHT, [leaf]);
 
   const root = tree.root();
@@ -19,8 +21,12 @@ async function main() {
     pathElements,
     pathIndices,
     ...degreeInput,
-    nonce: 1,
+    nonce: 0,
   };
+
+  console.log(root, pathElements, pathIndices);
+
+  return;
 
   // build witness calculator with webassembly
   const buffer = fs.readFileSync("./scripts/zk_calculator/zuni.wasm");
@@ -31,11 +37,25 @@ async function main() {
 
   const { proof, publicSignals } = await groth16.prove(zKeyFile, witnessFile);
 
-  const verifyKey = JSON.parse(
-    fs.readFileSync("./groth16/zuni/verification_key.json")
+  const dataStr = await groth16.exportSolidityCallData(proof, publicSignals);
+  const data = JSON.parse("[" + dataStr + "]");
+
+  const abiCoder = new AbiCoder();
+
+  const bytes = abiCoder.encode(
+    ["uint256[2]", "uint256[2][2]", "uint256[2]"],
+    [data[0], data[1], data[2]]
   );
-  const isVerify = await groth16.verify(verifyKey, publicSignals, proof);
-  console.log("Verify:", isVerify);
+
+  console.log("proof:", bytes);
+  console.log("major:", degreeInput.major);
+  console.log("root:", `0x${new BN(root).toString("hex")}`);
+
+  // const verifyKey = JSON.parse(
+  //   fs.readFileSync("./groth16/zuni/verification_key.json")
+  // );
+  // const isVerify = await groth16.verify(verifyKey, publicSignals, proof);
+  // console.log("Verify:", isVerify);
 }
 
 main().catch((e) => console.log(e.message));
