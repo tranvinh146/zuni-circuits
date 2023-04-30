@@ -24,10 +24,6 @@ async function main() {
     nonce: 0,
   };
 
-  console.log(root, pathElements, pathIndices);
-
-  return;
-
   // build witness calculator with webassembly
   const buffer = fs.readFileSync("./scripts/zk_calculator/zuni.wasm");
   const witnessCalculator = await wc(buffer);
@@ -47,9 +43,11 @@ async function main() {
     [data[0], data[1], data[2]]
   );
 
-  console.log("proof:", bytes);
-  console.log("major:", degreeInput.major);
-  console.log("root:", `0x${new BN(root).toString("hex")}`);
+  console.log("Solidity Calldata");
+  console.log("proof: " + bytes);
+  console.log("major: 0x" + degreeInput.major.slice(2).padStart(64, "0"));
+  console.log("nonce: 0x" + input.nonce.toString().padStart(64, "0"));
+  console.log("root: 0x" + new BN(root).toString("hex").padStart(64, "0"));
 
   // const verifyKey = JSON.parse(
   //   fs.readFileSync("./groth16/zuni/verification_key.json")
