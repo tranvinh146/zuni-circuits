@@ -3,10 +3,9 @@ const { getInputFromDegree, getPedersenHashFromDegree } = require("./utils");
 const { groth16 } = require("snarkjs");
 const wc = require("./zk_calculator/witness_calculator.js");
 const fs = require("fs");
-const { ethers, AbiCoder } = require("ethers");
+const { AbiCoder } = require("ethers");
 const { BN } = require("bn.js");
-
-const MERKLE_TREE_HEIGHT = 20;
+const { MERKLE_TREE_HEIGHT } = require("./constant");
 
 async function main() {
   const leaf = await getPedersenHashFromDegree();

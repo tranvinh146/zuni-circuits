@@ -8,9 +8,17 @@ const byteLengthOfData = {
   school: 31,
   yearGraduation: 4,
   major: 31,
-  modeOfStudy: 16,
-  decisionNumber: 16,
   classification: 16,
+  modeOfStudy: 16,
+  serialNumber: 16,
+  referenceNumber: 16,
+  dateOfIssue: {
+    day: 2,
+    month: 2,
+    year: 4,
+  },
 };
 
-module.exports = { byteLengthOfData };
+const MERKLE_TREE_HEIGHT = 20;
+
+module.exports = { byteLengthOfData, MERKLE_TREE_HEIGHT };

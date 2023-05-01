@@ -1,14 +1,20 @@
 {
   "name": "Nguyen Van A",
   "dateOfBirth": {
-    "day": "10",
-    "month": "11",
-    "year": "2023"
+    "day": "01",
+    "month": "03",
+    "year": "2000"
   },
   "school": "Truong dai hoc CNTT",
   "yearGraduation": "2019",
   "major": "CNTT",
+  "classification": "Very good",
   "modeOfStudy": "Chinh quy",
-  "decisionNumber": "178/QĐ_ĐHCNTT",
-  "classification": "Very good"
+  "serialNumber": "00324431",
+  "referenceNumber": "178/QĐ_ĐHCNTT",
+  "dateOfIssue": {
+    "day": "10",
+    "month": "11",
+    "year": "2023"
+  }
 }

@@ -10,9 +10,11 @@ template CommitmentHasher() {
     signal input school;            // 31 bytes
     signal input yearGraduation;    //  4 bytes
     signal input major;             // 31 bytes
-    signal input modeOfStudy;       // 16 bytes
-    signal input decisionNumber;    // 16 bytes
     signal input classification;    // 16 bytes
+    signal input modeOfStudy;       // 16 bytes
+    signal input serialNumber;      // 16 bytes
+    signal input referenceNumber;   // 16 bytes
+    signal input dateOfIssue[3];    // [day, month, year] | [2, 2, 4] bytes
     
     signal output commitment;
 
@@ -25,11 +27,15 @@ template CommitmentHasher() {
     var schoolBitsLength            = 31 * byteToBits;
     var yearGraduationBitsLength    =  4 * byteToBits;
     var majorBitsLength             = 31 * byteToBits;
-    var modeOfStudyBitsLength       = 16 * byteToBits;
-    var decisionNumberBitsLength    = 16 * byteToBits;
     var classificationBitsLength    = 16 * byteToBits;
+    var modeOfStudyBitsLength       = 16 * byteToBits;
+    var serialNumberBitsLength      = 16 * byteToBits;
+    var referenceNumberBitsLength   = 16 * byteToBits;
+    var dayOfIssueBitsLength        =  2 * byteToBits;
+    var monthOfIssueBitsLength      =  2 * byteToBits;
+    var yearOfIssueBitsLength       =  4 * byteToBits;
 
-    var totalBitsLength = nameBitsLength + dayOfBirthBitsLength + monthOfBirthBitsLength + yearOfBirthBitsLength + schoolBitsLength + yearGraduationBitsLength + majorBitsLength + modeOfStudyBitsLength + decisionNumberBitsLength + classificationBitsLength;
+    var totalBitsLength = nameBitsLength + dayOfBirthBitsLength + monthOfBirthBitsLength + yearOfBirthBitsLength + schoolBitsLength + yearGraduationBitsLength + majorBitsLength + classificationBitsLength + modeOfStudyBitsLength + serialNumberBitsLength + referenceNumberBitsLength + dayOfIssueBitsLength + monthOfIssueBitsLength + yearOfIssueBitsLength;
 
     component nameBits              = Num2Bits(nameBitsLength);
     component dayOfBirthBits        = Num2Bits(dayOfBirthBitsLength);    
@@ -38,9 +44,13 @@ template CommitmentHasher() {
     component schoolBits            = Num2Bits(schoolBitsLength);
     component yearGraduationBits    = Num2Bits(yearGraduationBitsLength);
     component majorBits             = Num2Bits(majorBitsLength);
-    component modeOfStudyBits       = Num2Bits(modeOfStudyBitsLength);
-    component decisionNumberBits    = Num2Bits(decisionNumberBitsLength);
     component classificationBits    = Num2Bits(classificationBitsLength);
+    component modeOfStudyBits       = Num2Bits(modeOfStudyBitsLength);
+    component serialNumberBits      = Num2Bits(serialNumberBitsLength);
+    component referenceNumberBits   = Num2Bits(referenceNumberBitsLength);
+    component dayOfIssueBits        = Num2Bits(dayOfIssueBitsLength);    
+    component monthOfIssueBits      = Num2Bits(monthOfIssueBitsLength);
+    component yearOfIssueBits       = Num2Bits(yearOfIssueBitsLength);
 
     component commitmentHasher = Pedersen(totalBitsLength);
 
@@ -95,20 +105,6 @@ template CommitmentHasher() {
     }
     previousLength += majorBitsLength;
 
-    // model
-    modeOfStudyBits.in <== modeOfStudy;
-    for (var i = 0; i < modeOfStudyBitsLength; i++) {
-        commitmentHasher.in[i + previousLength] <== modeOfStudyBits.out[i];
-    }
-    previousLength += modeOfStudyBitsLength;
-
-    // decisionNumber
-    decisionNumberBits.in <== decisionNumber;
-    for (var i = 0; i < decisionNumberBitsLength; i++) {
-        commitmentHasher.in[i + previousLength] <== decisionNumberBits.out[i];
-    }
-    previousLength += decisionNumberBitsLength;
-
     // classification
     classificationBits.in   <== classification;
     for (var i = 0; i < classificationBitsLength; i++) {
@@ -116,6 +112,49 @@ template CommitmentHasher() {
     }
     previousLength += classificationBitsLength;
 
+    // model
+    modeOfStudyBits.in <== modeOfStudy;
+    for (var i = 0; i < modeOfStudyBitsLength; i++) {
+        commitmentHasher.in[i + previousLength] <== modeOfStudyBits.out[i];
+    }
+    previousLength += modeOfStudyBitsLength;
+
+    // serialNumber
+    serialNumberBits.in <== serialNumber;
+    for (var i = 0; i < serialNumberBitsLength; i++) {
+        commitmentHasher.in[i + previousLength] <== serialNumberBits.out[i];
+    }
+    previousLength += serialNumberBitsLength;
+
+    // referenceNumber
+    referenceNumberBits.in <== referenceNumber;
+    for (var i = 0; i < referenceNumberBitsLength; i++) {
+        commitmentHasher.in[i + previousLength] <== referenceNumberBits.out[i];
+    }
+    previousLength += referenceNumberBitsLength;
+
+    // day of issue
+    dayOfIssueBits.in <== dateOfIssue[0];
+    for (var i = 0; i < dayOfIssueBitsLength; i++) {
+        commitmentHasher.in[i + previousLength] <== dayOfIssueBits.out[i];
+    }
+    previousLength += dayOfIssueBitsLength;
+
+    // month of issue
+    monthOfIssueBits.in <== dateOfIssue[1];
+    for (var i = 0; i < monthOfIssueBitsLength; i++) {
+        commitmentHasher.in[i + previousLength] <== monthOfIssueBits.out[i];
+    }
+    previousLength += monthOfIssueBitsLength;
+
+    // year of issue
+    yearOfIssueBits.in <== dateOfIssue[2];
+    for (var i = 0; i < yearOfIssueBitsLength; i++) {
+        commitmentHasher.in[i + previousLength] <== yearOfIssueBits.out[i];
+    }
+    previousLength += yearOfIssueBitsLength;
+
+    // ensure the length correct
     previousLength === totalBitsLength;
 
     commitment <== commitmentHasher.out[0];
