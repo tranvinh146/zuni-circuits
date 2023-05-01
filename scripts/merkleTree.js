@@ -49,11 +49,11 @@ async function main() {
   console.log("nonce: 0x" + input.nonce.toString().padStart(64, "0"));
   console.log("root: 0x" + new BN(root).toString("hex").padStart(64, "0"));
 
-  // const verifyKey = JSON.parse(
-  //   fs.readFileSync("./groth16/zuni/verification_key.json")
-  // );
-  // const isVerify = await groth16.verify(verifyKey, publicSignals, proof);
-  // console.log("Verify:", isVerify);
+  const verifyKey = JSON.parse(
+    fs.readFileSync("./groth16/zuni/verification_key.json")
+  );
+  const isVerify = await groth16.verify(verifyKey, publicSignals, proof);
+  console.log("Verify:", isVerify);
 }
 
 main().catch((e) => console.log(e.message));

@@ -9,7 +9,9 @@ INPUT=$(cat inputs/$1.json)
 
 if [ -z "$2" ] || [ "$2" = "build" ]; then
     echo -e "\n\nBuilding circuit..."
+    mkdir -p compilers
     mkdir -p compilers/$NAME
+
     circom circuits/$NAME.circom --r1cs --wasm -o compilers/$NAME
 fi
 
@@ -20,10 +22,14 @@ if [ -z "$2" ] || [ $2 = "compile" ]; then
     echo $INPUT > input.json
     node generate_witness.js $NAME.wasm input.json witness.wtns
     cd ../../..
+
+    cp compilers/$NAME/"$NAME"_js/witness_calculator.js scripts/zk_calculator
+    cp compilers/$NAME/"$NAME"_js/zuni.wasm scripts/zk_calculator
 fi
 
 if [ -z "$2" ] || [ $2 = "setup" ]; then
     echo -e "\n\nSetup verification key..."
+    mkdir -p groth16
     mkdir -p groth16/$NAME
 
     snarkjs groth16 setup compilers/$NAME/$NAME.r1cs groth16/powersOfTau28_hez_final_15.ptau groth16/$NAME/"$NAME"_"$NUMBER".zkey
@@ -33,6 +39,7 @@ fi
 
 if [ -z "$2" ] || [ $2 = "verify" ]; then
     echo -e "\n\nVerifying..."
+    mkdir -p proofs
     mkdir -p proofs/$NAME
 
     if output=$(npx snarkjs groth16 prove groth16/$NAME/"$NAME"_"$NUMBER".zkey compilers/$NAME/"$NAME"_js/witness.wtns proofs/$NAME/proof.json proofs/$NAME/public.json 2>&1); then
