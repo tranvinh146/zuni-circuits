@@ -1,4 +1,3 @@
-const MerkleTree = require("fixed-merkle-tree");
 const { getInputFromDegree, getPedersenHashFromDegree } = require("./utils");
 const { groth16 } = require("snarkjs");
 const wc = require("./zk_calculator/witness_calculator.js");
@@ -6,13 +5,26 @@ const fs = require("fs");
 const { AbiCoder } = require("ethers");
 const { BN } = require("bn.js");
 const { MERKLE_TREE_HEIGHT } = require("./constant");
+const { default: MerkleTree } = require("fixed-merkle-tree");
+const { buildMimcSponge } = require("circomlibjs");
 
 async function main() {
   const leaf = await getPedersenHashFromDegree();
-  const tree = new MerkleTree(MERKLE_TREE_HEIGHT, [leaf]);
+  const mimcBuilder = await buildMimcSponge();
 
-  const root = tree.root();
+  const hashFunction = (left, right) => {
+    return mimcBuilder.F.toString(
+      mimcBuilder.multiHash([new BN(left), new BN(right)])
+    );
+  };
+
+  const tree = new MerkleTree(MERKLE_TREE_HEIGHT, [leaf], { hashFunction });
+
+  const root = new BN(tree.root);
   const { pathElements, pathIndices } = tree.path(0);
+  for (let i = 0; i < pathElements.length; i++) {
+    pathElements[i] = new BN(pathElements[i]);
+  }
 
   const degreeInput = getInputFromDegree();
   const input = {
