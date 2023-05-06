@@ -20,6 +20,10 @@ const bufferLe = (buf) => {
   return "0x" + itemLeHex;
 };
 
+const convertToLePartials = (fullBuf) => {
+  return [bufferLe(fullBuf.slice(0, 16)), bufferLe(fullBuf.slice(16, 32))];
+};
+
 const toHex = (number, length = 32) =>
   "0x" +
   (number instanceof Buffer
@@ -143,4 +147,5 @@ module.exports = {
   getInputFromDegree,
   getMsgFromDegree,
   bufferLe,
+  convertToLePartials,
 };

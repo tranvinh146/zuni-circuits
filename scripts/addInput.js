@@ -1,10 +1,10 @@
 const { buildEddsa, buildBabyjub } = require("circomlibjs");
-const { getMsgFromDegree, getInputFromDegree, bufferLe } = require("./utils");
+const {
+  getMsgFromDegree,
+  getInputFromDegree,
+  convertToLePartials,
+} = require("./utils");
 const fs = require("fs");
-
-const convertToPartials = (fullBuf) => {
-  return [bufferLe(fullBuf.slice(0, 16)), bufferLe(fullBuf.slice(16, 32))];
-};
 
 async function main() {
   const eddsa = await buildEddsa();
@@ -24,9 +24,9 @@ async function main() {
   const r8 = pSignature.slice(0, 32);
   const s = pSignature.slice(32, 64);
 
-  const pubKeyPartials = convertToPartials(pPubKey);
-  const r8Partials = convertToPartials(r8);
-  const sPartials = convertToPartials(s);
+  const pubKeyPartials = convertToLePartials(pPubKey);
+  const r8Partials = convertToLePartials(r8);
+  const sPartials = convertToLePartials(s);
 
   const degree = getInputFromDegree();
   const input = {
