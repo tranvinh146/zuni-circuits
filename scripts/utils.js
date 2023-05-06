@@ -12,6 +12,14 @@ const stringToLeHex = (stringData, length = 32) => {
   return "0x" + itemLeHex;
 };
 
+const bufferLe = (buf) => {
+  const itemBN = new BN(buf);
+  const itemLe = itemBN.toBuffer("le");
+  const itemLeHex = itemLe.toString("hex");
+
+  return "0x" + itemLeHex;
+};
+
 const toHex = (number, length = 32) =>
   "0x" +
   (number instanceof Buffer
@@ -95,10 +103,44 @@ const getInputFromDegree = () => {
   return input;
 };
 
+const getMsgFromDegree = () => {
+  const dataStringify = fs.readFileSync("./scripts/data.json");
+  const data = JSON.parse(dataStringify);
+  let totalData = "";
+
+  for (let key in data) {
+    if (typeof data[key] === "object") {
+      const parentValue = data[key];
+
+      for (let childKey in parentValue) {
+        const value = parentValue[childKey];
+        const length = byteLengthOfData[key][childKey];
+
+        const itemLeHex = stringToLeHex(value, length);
+
+        totalData += itemLeHex.slice(2);
+      }
+    } else {
+      const value = data[key];
+      const length = byteLengthOfData[key];
+
+      const itemLeHex = stringToLeHex(value, length);
+
+      totalData += itemLeHex.slice(2);
+    }
+  }
+
+  const buff = new BN(totalData, "hex").toBuffer();
+
+  return buff;
+};
+
 module.exports = {
   stringToLeHex,
   toHex,
   pedersenHash,
   getPedersenHashFromDegree,
   getInputFromDegree,
+  getMsgFromDegree,
+  bufferLe,
 };

@@ -1,11 +1,22 @@
 pragma circom 2.0.0;
 
+include "../node_modules/circomlib/circuits/bitify.circom";
 include "../node_modules/circomlib/circuits/eddsa.circom";
 
-template ZUni() {
-    signal input pubKeyPartials[2];
-    signal input r8Partials[2];
-    signal input sPartials[2];
+template Verifier() {
+    signal input pubKey[2];
+    
+    component pubKeyBits[2];
+    
+    pubKeyBits[0] = Num2Bits(128);
+    pubKeyBits[0].in <== pubKey[0];
+
+    pubKeyBits[1] = Num2Bits(128);
+    pubKeyBits[1].in <== pubKey[1];
+    
+    signal input A[256];
+    signal input R8[256];
+    signal input S[256];
     
     signal input name;              // 31 bytes
     signal input dateOfBirth[3];    // [day, month, year] | [2, 2, 4] bytes
@@ -38,29 +49,14 @@ template ZUni() {
     var totalBitsLength = nameBitsLength + dayOfBirthBitsLength + monthOfBirthBitsLength + yearOfBirthBitsLength + schoolBitsLength + yearGraduationBitsLength + majorBitsLength + classificationBitsLength + modeOfStudyBitsLength + serialNumberBitsLength + referenceNumberBitsLength + dayOfIssueBitsLength + monthOfIssueBitsLength + yearOfIssueBitsLength;
 
     component eddsaVerifier = EdDSAVerifier(totalBitsLength);
-    component pubKeyPartialsBits[2];
-    component r8PartialsBits[2];
-    component sPartialsBits[2];
-
-    for (var i = 0; i < 2; i++) {
-        pubKeyPartialsBits[i] = Num2Bits(128);
-        r8PartialsBits[i] = Num2Bits(128);
-        sPartialsBits[i] = Num2Bits(128);
-
-        pubKeyPartialsBits[i].in <== pubKeyPartials[i];
-        r8PartialsBits[i].in <== r8Partials[i];
-        sPartialsBits[i].in <== sPartials[i];
-    }
-
-    for (var i = 0; i < 128; i++) {
-        eddsaVerifier.A[i]          <== pubKeyPartialsBits[0].out[i];
-        eddsaVerifier.A[i + 128]    <== pubKeyPartialsBits[1].out[i];
-        
-        eddsaVerifier.R8[i]         <== r8PartialsBits[0].out[i];
-        eddsaVerifier.R8[i + 128]   <== r8PartialsBits[1].out[i];
-
-        eddsaVerifier.S[i]         <== sPartialsBits[0].out[i];
-        eddsaVerifier.S[i + 128]   <== sPartialsBits[1].out[i];
+    for (var i = 0; i < 256; i++) {
+        // eddsaVerifier.A[i]  <== A[i];
+        if (i < 128) {
+            eddsaVerifier.A[i] <== pubKeyBits[0].out[i];
+            eddsaVerifier.A[i + 128] <== pubKeyBits[1].out[i];
+        }
+        eddsaVerifier.R8[i]  <== R8[i];
+        eddsaVerifier.S[i]  <== S[i];
     }
 
     component nameBits              = Num2Bits(nameBitsLength);
@@ -182,5 +178,5 @@ template ZUni() {
     previousLength === totalBitsLength;
 }
 
-component main { public[major, pubKeyPartials] } = ZUni();
+component main = Verifier();
 

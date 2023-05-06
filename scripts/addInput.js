@@ -1,23 +1,39 @@
+const { buildEddsa, buildBabyjub } = require("circomlibjs");
+const { getMsgFromDegree, getInputFromDegree, bufferLe } = require("./utils");
 const fs = require("fs");
-const { getInputFromDegree, getPedersenHashFromDegree } = require("./utils");
-const MerkleTree = require("fixed-merkle-tree");
-const { MERKLE_TREE_HEIGHT } = require("./constant");
+
+const convertToPartials = (fullBuf) => {
+  return [bufferLe(fullBuf.slice(0, 16)), bufferLe(fullBuf.slice(16, 32))];
+};
 
 async function main() {
-  console.log("\nAdding new file...");
-  const leaf = await getPedersenHashFromDegree();
-  const tree = new MerkleTree(MERKLE_TREE_HEIGHT, [leaf]);
+  const eddsa = await buildEddsa();
+  const babyJub = await buildBabyjub();
 
-  const root = tree.root();
-  const { pathElements, pathIndices } = tree.path(0);
+  const msg = getMsgFromDegree();
 
-  const degreeInput = getInputFromDegree();
+  const prvKey = Buffer.from(
+    "0001020304050607080900010203040506070809000102030405060708090001",
+    "hex"
+  );
+  const pubKey = eddsa.prv2pub(prvKey);
+
+  const pPubKey = babyJub.packPoint(pubKey);
+  const signature = eddsa.signPedersen(prvKey, msg);
+  const pSignature = eddsa.packSignature(signature);
+  const r8 = pSignature.slice(0, 32);
+  const s = pSignature.slice(32, 64);
+
+  const pubKeyPartials = convertToPartials(pPubKey);
+  const r8Partials = convertToPartials(r8);
+  const sPartials = convertToPartials(s);
+
+  const degree = getInputFromDegree();
   const input = {
-    root,
-    pathElements,
-    pathIndices,
-    ...degreeInput,
-    nonce: 0,
+    pubKeyPartials,
+    r8Partials,
+    sPartials,
+    ...degree,
   };
 
   fs.writeFileSync("./inputs/zuni.json", JSON.stringify(input));

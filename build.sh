@@ -13,6 +13,9 @@ if [ -z "$2" ] || [ "$2" = "build" ]; then
     mkdir -p compilers/$NAME
 
     circom circuits/$NAME.circom --r1cs --wasm -o compilers/$NAME
+
+    cp compilers/$NAME/"$NAME"_js/witness_calculator.js scripts/zk_calculator
+    cp compilers/$NAME/"$NAME"_js/$NAME.wasm scripts/zk_calculator
 fi
 
 if [ -z "$2" ] || [ $2 = "compile" ]; then
@@ -22,9 +25,6 @@ if [ -z "$2" ] || [ $2 = "compile" ]; then
     echo $INPUT > input.json
     node generate_witness.js $NAME.wasm input.json witness.wtns
     cd ../../..
-
-    cp compilers/$NAME/"$NAME"_js/witness_calculator.js scripts/zk_calculator
-    cp compilers/$NAME/"$NAME"_js/zuni.wasm scripts/zk_calculator
 fi
 
 if [ -z "$2" ] || [ $2 = "setup" ]; then
@@ -32,7 +32,7 @@ if [ -z "$2" ] || [ $2 = "setup" ]; then
     mkdir -p groth16
     mkdir -p groth16/$NAME
 
-    snarkjs groth16 setup compilers/$NAME/$NAME.r1cs groth16/powersOfTau28_hez_final_15.ptau groth16/$NAME/"$NAME"_"$NUMBER".zkey
+    snarkjs groth16 setup compilers/$NAME/$NAME.r1cs groth16/powersOfTau28_hez_final_1*.ptau groth16/$NAME/"$NAME"_"$NUMBER".zkey
     # snarkjs zkey contribute "$NAME"_"$NUMBER".zkey "$NAME"_0001.zkey --name="1st Contributor Name" -v
     snarkjs zkey export verificationkey groth16/$NAME/"$NAME"_"$NUMBER".zkey groth16/$NAME/verification_key.json
 fi
